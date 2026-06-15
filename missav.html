@@ -44,6 +44,8 @@ var HOST='https://missav.live',PAGE=1,CAT='new',KEY='',BUSY=false;
 var CATS=[['new','最新'],['20','国产'],['21','有码'],['22','无码'],['28','字幕'],['23','欧美'],['24','动漫'],['25','伦理']];
 var $=function(id){return document.getElementById(id)};
 var esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')};
+var UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
+var HDR={headers:{'User-Agent':UA,'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8','Accept-Language':'zh-CN,zh;q=0.9,en;q=0.8','Referer':HOST+'/','Accept-Encoding':'gzip'}};
 
 function onSDK(cb){
   if(window.fm&&fm.req)return cb();
@@ -62,7 +64,7 @@ function loadList(reset){
   if(reset)PAGE=1;
   BUSY=true;$('loading').style.display='block';$('moreBtn').style.display='none';
   var url=KEY?HOST+'/vodsearch/'+encodeURIComponent(KEY)+'-------------/page/'+PAGE+'/':CAT==='new'?HOST+'/label/new/page/'+PAGE+'/':HOST+'/vodtype/'+CAT+'-'+PAGE+'/';
-  fm.req(url,{}).then(function(resp){
+  fm.req(url,HDR).then(function(resp){
     BUSY=false;$('loading').style.display='none';
     if(!resp.ok||!resp.body||resp.body.length<200){if(reset)$('content').innerHTML='<div class="empty">加载失败</div>';return;}
     var items=[];
@@ -95,7 +97,7 @@ function loadMore(){if(!BUSY){PAGE++;loadList(false)}}
 function openDetail(id){
   $('content').innerHTML='<div class="loading">加载详情...</div>';
   $('moreBtn').style.display='none';
-  fm.req(HOST+'/vodplay/'+id+'-1-1/',{}).then(function(resp){
+  fm.req(HOST+'/vodplay/'+id+'-1-1/',HDR).then(function(resp){
     if(!resp.ok||!resp.body||resp.body.length<200){$('content').innerHTML='<div class="empty">详情加载失败</div>';return;}
     var pi=resp.body.indexOf('var player_aaaa');
     if(pi<0){$('content').innerHTML='<div class="empty">未找到播放信息</div>';return;}
